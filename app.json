@@ -1,0 +1,80 @@
+{
+  "expo": {
+    "name": "Proaslift",
+    "slug": "asansor-mobile",
+    "version": "2.0.9",
+    "orientation": "portrait",
+    "scheme": "asansor",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "description": "Proaslift — Asansör bakım ve yönetim uygulaması. Binalarınızı, bakımları ve asansörlerinizi kolayca yönetin.",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.harmansah.asansor",
+      "buildNumber": "10",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Çalışanların konumunu takip etmek için konum erişimi gereklidir",
+        "NSLocationAlwaysUsageDescription": "Arka planda konum takibi için konum erişimi gereklidir",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Konum takibi için konum erişimi gereklidir",
+        "NSCameraUsageDescription": "Bakım raporlarına fotoğraf eklemek için kamera erişimi gereklidir",
+        "NSPhotoLibraryUsageDescription": "Bakım raporlarına galeri fotoğrafı eklemek için izin gereklidir",
+        "NSPhotoLibraryAddUsageDescription": "Bakım fotoğraflarını kaydetmek için galeri erişimi gereklidir",
+        "NSFaceIDUsageDescription": "Hızlı ve güvenli giriş için Face ID kullanılacaktır",
+        "NSUserNotificationsUsageDescription": "Bakım bildirimleri ve atanan işler için bildirim izni gereklidir",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.harmansah.asansor",
+      "versionCode": 12,
+      "permissions": [
+        "CAMERA",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2415558a-61ec-48ea-8926-1b430880b3c0"
+      }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#2563eb",
+          "sounds": [],
+          "mode": "production"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "buildReactNativeFromSource": true
+          }
+        }
+      ]
+    ]
+  }
+}
