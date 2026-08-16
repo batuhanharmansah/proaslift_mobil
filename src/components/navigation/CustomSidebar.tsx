@@ -31,6 +31,7 @@ interface MenuItem {
   route: string;
   badge?: number;
   color: string;
+  params?: Record<string, unknown>;
 }
 
 interface CustomSidebarProps {
@@ -139,14 +140,93 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ visible, onClose }) => {
       ...(isEmployee ? [] : [{
         id: 'elevatorLabels',
         title: 'Etiket Takibi',
-        icon: 'pricetag',
+        icon: 'pricetag' as const,
         route: 'ElevatorLabels',
         color: COLORS.success[600],
       }]),
       ...(isEmployee ? [] : [{
+        id: 'quotations',
+        title: 'Teklifler',
+        icon: 'document-text' as const,
+        route: 'Quotations',
+        color: COLORS.primary[600],
+      }]),
+      ...(isEmployee ? [] : [{
+        id: 'reports',
+        title: 'Raporlar',
+        icon: 'bar-chart' as const,
+        route: 'ReportsHub',
+        color: COLORS.warning[600],
+      }]),
+      ...(isEmployee ? [] : [{
+        id: 'locationMap',
+        title: 'Konum Takibi',
+        icon: 'map' as const,
+        route: 'LocationMap',
+        color: COLORS.success[500],
+      }]),
+      ...(isEmployee ? [] : [{
+        id: 'routePlanner',
+        title: 'Rota Planlayıcı',
+        icon: 'navigate' as const,
+        route: 'RoutePlanner',
+        color: COLORS.primary[500],
+      }]),
+      ...(isEmployee ? [] : [{
+        id: 'bulkMaintenance',
+        title: 'Toplu Bakım',
+        icon: 'copy' as const,
+        route: 'BulkMaintenance',
+        color: COLORS.error[500],
+      }]),
+      ...(isEmployee ? [] : [{
+        id: 'checks',
+        title: 'Çek & Senet',
+        icon: 'cash' as const,
+        route: 'Checks',
+        color: COLORS.success[600],
+      }]),
+      ...(isEmployee ? [] : [{
+        id: 'hrFleet',
+        title: 'Hakediş & Araç',
+        icon: 'car' as const,
+        route: 'HrFleet',
+        color: COLORS.warning[500],
+      }]),
+      ...(isEmployee ? [] : [{
+        id: 'dtr',
+        title: 'DTR',
+        icon: 'clipboard' as const,
+        route: 'ComplianceList',
+        color: COLORS.primary[700],
+        params: { documentType: 'dtr', title: 'DTR' },
+      }]),
+      ...(isEmployee ? [] : [{
+        id: 'kurtarma',
+        title: 'Kurtarma Formu',
+        icon: 'medical' as const,
+        route: 'ComplianceList',
+        color: COLORS.error[600],
+        params: { documentType: 'kurtarma', title: 'Kurtarma Formu' },
+      }]),
+      ...(isEmployee ? [] : [{
+        id: 'checklistSettings',
+        title: 'Kontrol Listesi',
+        icon: 'checkbox' as const,
+        route: 'ChecklistSettings',
+        color: COLORS.gray[700],
+      }]),
+      {
+        id: 'guide',
+        title: 'Kılavuz',
+        icon: 'book' as const,
+        route: 'Guide',
+        color: COLORS.primary[600],
+      },
+      ...(isEmployee ? [] : [{
         id: 'companyProfile',
         title: 'Firma Profili',
-        icon: 'business',
+        icon: 'business' as const,
         route: 'CompanyProfile',
         color: COLORS.gray[700],
       }]),
@@ -165,7 +245,7 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ visible, onClose }) => {
   // ==================== HANDLERS ====================
   const handleMenuPress = async (item: MenuItem) => {
     await hapticFeedback.light();
-    navigation.navigate(item.route);
+    navigation.navigate(item.route, item.params);
     onClose();
   };
 

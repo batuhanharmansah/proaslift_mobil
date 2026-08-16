@@ -1,13 +1,14 @@
 // Rutin Bakım Raporu - Checklist formu (Web ile uyumlu)
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Platform } from 'react-native';
 import { ROUTINE_CHECKLIST } from '../../constants/routineChecklist';
-import { COLORS, DIMENSIONS } from '../../constants';
+import { COLORS, DIMENSIONS, API_ENDPOINTS } from '../../constants';
 import { hapticFeedback } from '../../utils';
 import { formatTime } from '../../utils/dateUtils';
+import { apiClient } from '../../services/api/client';
 
 export interface ChecklistItemState {
   id: string;
@@ -28,10 +29,14 @@ export interface RoutineReportFormData {
   completion_percentage: number;
 }
 
-const initialChecklist = (): Record<string, ChecklistItemState[]> => {
+type CustomItemsBySection = Record<string, { id: string; title: string }[]>;
+
+const initialChecklist = (customItems: CustomItemsBySection = {}): Record<string, ChecklistItemState[]> => {
   const out: Record<string, ChecklistItemState[]> = {};
   ROUTINE_CHECKLIST.forEach(sec => {
-    out[sec.id] = sec.items.map(i => ({ id: i.id, title: i.title, checked: false, has_error: false, notes: '' }));
+    const base = sec.items.map(i => ({ id: i.id, title: i.title, checked: false, has_error: false, notes: '' }));
+    const custom = (customItems[sec.id] || []).map(i => ({ id: i.id, title: i.title, checked: false, has_error: false, notes: '' }));
+    out[sec.id] = [...base, ...custom];
   });
   return out;
 };
@@ -56,8 +61,28 @@ const RoutineReportForm: React.FC<Props> = ({ maintenanceSchedule, onSubmit }) =
   const [completionStatus, setCompletionStatus] = useState<'tamamlandi' | 'kismi_tamamlandi' | 'ertelendi'>('tamamlandi');
   const [customerName, setCustomerName] = useState('');
   const [customerNotes, setCustomerNotes] = useState('');
-  const [checklist, setChecklist] = useState(initialChecklist);
+  const [checklist, setChecklist] = useState(() => initialChecklist());
   const [submitting, setSubmitting] = useState(false);
+
+  // Firma özel checklist maddelerini yükle ve mevcut checklist'e ekle
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await apiClient.get<{ success: boolean; data: CustomItemsBySection }>(
+          API_ENDPOINTS.MAINTENANCE_CHECKLIST_ITEMS
+        );
+        if (!cancelled && res?.success && res.data) {
+          setChecklist(initialChecklist(res.data));
+        }
+      } catch {
+        // özel madde yüklenemezse standart checklist ile devam edilir
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const toggleCheck = useCallback((section: string, itemId: string) => {
     setChecklist(prev => {
@@ -84,7 +109,9 @@ const RoutineReportForm: React.FC<Props> = ({ maintenanceSchedule, onSubmit }) =
     });
   }, []);
 
-  const totalItems = ROUTINE_CHECKLIST.reduce((sum, s) => sum + s.items.length, 0);
+  // Statik listeye ek olarak firma özel maddeler de checklist state'inde olduğu için
+  // toplam madde sayısı state'ten hesaplanır (sabit ROUTINE_CHECKLIST uzunluğu değil).
+  const totalItems = Object.values(checklist).reduce((sum, items) => sum + items.length, 0);
   const checkedItems = Object.values(checklist).flat().filter(i => i.checked).length;
   const completionPercentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
 
@@ -123,7 +150,7 @@ const RoutineReportForm: React.FC<Props> = ({ maintenanceSchedule, onSubmit }) =
           <View key={section.id} style={styles.section}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>{section.icon} {section.title}</Text>
-              <Text style={styles.sectionCount}>{checked}/{section.items.length}</Text>
+              <Text style={styles.sectionCount}>{checked}/{items.length}</Text>
             </View>
             {items.map(item => (
               <View key={item.id} style={[styles.checkItem, item.has_error && styles.checkItemError]}>

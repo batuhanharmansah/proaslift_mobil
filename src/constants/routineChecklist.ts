@@ -28,7 +28,6 @@ export const ROUTINE_CHECKLIST: ChecklistSection[] = [
       { id: 'motor_coupling_adjustment', title: 'Motor kaplin, şase, saplama ve kasnak ayarının kontrolü' },
       { id: 'machine_drive_oil_levels', title: 'Makina tahrik grubu yağ seviyeleri' },
       { id: 'machine_brake_coil', title: 'Makina fren bobini kontrolü' },
-      { id: 'machine_brake_pad_2', title: 'Makina fren balata kontrolü (2)' },
       { id: 'machine_panel_fuse_contactor', title: 'Makina panosu sigorta ve kontaktör kontrolü' },
       { id: 'control_panel_fuse_contactor', title: 'Kumanda panosu sigorta ve kontaktör kontrolü' },
       { id: 'electrical_panel_30ma', title: 'Elektrik panosu 30mA kaçak akım rölesi kontrolü' },

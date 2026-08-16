@@ -61,6 +61,7 @@ const NotificationsScreen: React.FC = () => {
     current_page: 1,
     last_page: 1,
     per_page: 20,
+    total: 0,
   });
 
   // ==================== HOOKS ====================
@@ -184,6 +185,7 @@ const NotificationsScreen: React.FC = () => {
               current_page: notificationsData.current_page,
               last_page: notificationsData.last_page || 1,
               per_page: notificationsData.per_page || 20,
+              total: notificationsData.total ?? 0,
             });
           }
         } else if (Array.isArray(notificationsData)) {
@@ -236,8 +238,11 @@ const NotificationsScreen: React.FC = () => {
       const response = await apiClient.get(API_ENDPOINTS.NOTIFICATIONS_UNREAD_COUNT);
       // apiClient zaten response.data'yı unwrap eder: { success, data: { total_unread, ... } }
       const data = response?.data ?? response;
+      const total = data?.total ?? 0;
+      const unread = Math.min(data?.total_unread ?? 0, total > 0 ? total : (data?.total_unread ?? 0));
       setUnreadCount({
-        total_unread: data?.total_unread ?? 0,
+        total,
+        total_unread: unread,
         by_type: data?.by_type ?? {},
         by_priority: data?.by_priority ?? {},
       });
@@ -395,7 +400,7 @@ const NotificationsScreen: React.FC = () => {
           }}
         >
           <Text style={[styles.tabText, filterTab === 'all' && styles.tabTextActive]}>
-            Tümü ({notifications.length})
+            Tümü ({pagination.total || notifications.length})
           </Text>
         </TouchableOpacity>
 

@@ -1,7 +1,7 @@
 // 🏢 BUILDING DETAIL SCREEN
 // Bina detay sayfası - Tüm bilgiler, bakım geçmişi, iletişimler, belgeler
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useLayoutEffect } from 'react';
 import {
   View,
   Text,
@@ -43,6 +43,7 @@ interface BuildingDetail {
   floor_count: number;
   elevator_count: number;
   elevator_type: string;
+  elevator_code?: string;
   elevator_brand: string;
   elevator_model: string;
   installation_year?: number;
@@ -81,6 +82,7 @@ interface BuildingDetail {
   issue_reports: Array<{
     id: number;
     issue_type: string;
+    issue_type_label?: string;
     priority: string;
     description: string;
     status: string;
@@ -166,6 +168,61 @@ const BuildingDetailScreen: React.FC = () => {
   useEffect(() => {
     fetchBuildingDetail();
   }, [fetchBuildingDetail]);
+
+  const handleDeleteBuilding = useCallback(() => {
+    Alert.alert(
+      'Binayı Sil',
+      `${building?.name || 'Bu bina'} silinecek. Bu işlem geri alınamaz.`,
+      [
+        { text: 'İptal', style: 'cancel' },
+        {
+          text: 'Sil',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await hapticFeedback.medium();
+              const response = await apiClient.delete(API_ENDPOINTS.BUILDING_DETAIL(buildingId)) as {
+                success?: boolean;
+                message?: string;
+              };
+              if (response?.success) {
+                Alert.alert('Başarılı', response.message || 'Bina silindi.', [
+                  { text: 'Tamam', onPress: () => navigation.navigate('Buildings') },
+                ]);
+              } else {
+                Alert.alert('Hata', response?.message || 'Bina silinemedi.');
+              }
+            } catch (err: any) {
+              Alert.alert('Hata', err?.response?.data?.message || err?.message || 'Bina silinemedi.');
+            }
+          },
+        },
+      ]
+    );
+  }, [building?.name, buildingId, navigation]);
+
+  useLayoutEffect(() => {
+    if (isEmployee) {
+      navigation.setOptions({ headerRight: undefined });
+      return;
+    }
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 4 }}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('BuildingEdit', { buildingId })}
+            style={{ padding: 8 }}
+            accessibilityLabel="Düzenle"
+          >
+            <Ionicons name="create-outline" size={22} color="white" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleDeleteBuilding} style={{ padding: 8 }} accessibilityLabel="Sil">
+            <Ionicons name="trash-outline" size={22} color="white" />
+          </TouchableOpacity>
+        </View>
+      ),
+    });
+  }, [navigation, isEmployee, buildingId, handleDeleteBuilding]);
 
   // ==================== HANDLERS ====================
   const handleRefresh = useCallback(async () => {
@@ -479,7 +536,7 @@ const BuildingDetailScreen: React.FC = () => {
             {building.issue_reports.map((issue) => (
               <View key={issue.id} style={styles.issueItem}>
                 <View style={styles.issueHeader}>
-                  <Text style={styles.issueType}>{issue.issue_type}</Text>
+                  <Text style={styles.issueType}>{issue.issue_type_label || issue.issue_type}</Text>
                   {issue.is_urgent && (
                     <View style={styles.urgentBadge}>
                       <Text style={styles.urgentText}>Acil</Text>

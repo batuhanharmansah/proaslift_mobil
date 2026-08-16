@@ -328,7 +328,22 @@ export type RootStackParamList = {
   Notifications: undefined;
   BuildingDetail: { buildingId: number };
   BuildingCreate: undefined;
+  BuildingEdit: { buildingId: number };
   Depot: undefined;
+  ProductDetail: { productId: number };
+  ProductCreate: undefined;
+  ProductEdit: { productId: number };
+  Quotations: undefined;
+  QuotationDetail: { quotationId: number };
+  ReportsHub: undefined;
+  LocationMap: undefined;
+  RoutePlanner: undefined;
+  BulkMaintenance: undefined;
+  Checks: undefined;
+  HrFleet: undefined;
+  ComplianceList: { documentType: 'dtr' | 'kurtarma'; title: string };
+  Guide: undefined;
+  ChecklistSettings: undefined;
   EmployeeDetail: { employeeId: number };
   MaintenanceDetail: { maintenanceId: number };
   MaintenanceEdit: { maintenanceId: number };
@@ -431,6 +446,7 @@ export interface NotificationItem {
 }
 
 export interface NotificationUnreadCount {
+  total?: number;
   total_unread: number;
   by_type: Record<string, number>;
   by_priority: Record<string, number>;

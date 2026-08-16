@@ -23,7 +23,21 @@ import EmployeeDashboardScreen from '../screens/dashboard/EmployeeDashboardScree
 import BuildingsScreen from '../screens/buildings/BuildingsScreen';
 import BuildingDetailScreen from '../screens/buildings/BuildingDetailScreen';
 import BuildingCreateScreen from '../screens/buildings/BuildingCreateScreen';
+import BuildingEditScreen from '../screens/buildings/BuildingEditScreen';
 import DepotScreen from '../screens/depot/DepotScreen';
+import ProductDetailScreen from '../screens/depot/ProductDetailScreen';
+import ProductCreateScreen, { ProductEditScreen } from '../screens/depot/ProductFormScreens';
+import LocationMapScreen from '../screens/location/LocationMapScreen';
+import QuotationsScreen from '../screens/parity/QuotationsScreen';
+import QuotationDetailScreen from '../screens/parity/QuotationDetailScreen';
+import ReportsHubScreen from '../screens/parity/ReportsHubScreen';
+import RoutePlannerScreen from '../screens/parity/RoutePlannerScreen';
+import BulkMaintenanceScreen from '../screens/parity/BulkMaintenanceScreen';
+import ChecksScreen from '../screens/parity/ChecksScreen';
+import HrFleetScreen from '../screens/parity/HrFleetScreen';
+import ComplianceListScreen from '../screens/parity/ComplianceListScreen';
+import GuideScreen from '../screens/parity/GuideScreen';
+import ChecklistSettingsScreen from '../screens/parity/ChecklistSettingsScreen';
 import EmployeesScreen from '../screens/employees/EmployeesScreen';
 import EmployeeDetailScreen from '../screens/employees/EmployeeDetailScreen';
 import MaintenanceScreen from '../screens/maintenance/MaintenanceScreen';
@@ -130,7 +144,46 @@ const RootNavigator: React.FC<RootNavigatorProps> = ({ consentAccepted }) => {
           component={BuildingCreateScreen}
           options={{ headerShown: true, title: 'Yeni Bina Ekle', headerBackTitle: 'Geri' }}
         />
+        <Stack.Screen
+          name="BuildingEdit"
+          component={BuildingEditScreen}
+          options={{ headerShown: true, title: 'Binayı Düzenle', headerBackTitle: 'Geri' }}
+        />
         <Stack.Screen name="Depot" component={DepotScreen} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="ProductDetail"
+          component={ProductDetailScreen}
+          options={{ headerShown: true, title: 'Ürün Detayı', headerBackTitle: 'Geri' }}
+        />
+        <Stack.Screen
+          name="ProductCreate"
+          component={ProductCreateScreen}
+          options={{ headerShown: true, title: 'Yeni Ürün', headerBackTitle: 'Geri' }}
+        />
+        <Stack.Screen
+          name="ProductEdit"
+          component={ProductEditScreen}
+          options={{ headerShown: true, title: 'Ürünü Düzenle', headerBackTitle: 'Geri' }}
+        />
+        <Stack.Screen name="Quotations" component={QuotationsScreen} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="QuotationDetail"
+          component={QuotationDetailScreen}
+          options={{ headerShown: true, title: 'Teklif Detayı', headerBackTitle: 'Geri' }}
+        />
+        <Stack.Screen name="ReportsHub" component={ReportsHubScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="LocationMap" component={LocationMapScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="RoutePlanner" component={RoutePlannerScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="BulkMaintenance" component={BulkMaintenanceScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Checks" component={ChecksScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="HrFleet" component={HrFleetScreen} options={{ headerShown: false }} />
+        <Stack.Screen
+          name="ComplianceList"
+          component={ComplianceListScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="Guide" component={GuideScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ChecklistSettings" component={ChecklistSettingsScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Employees" component={EmployeesScreen} options={{ headerShown: false }} />
         <Stack.Screen
           name="EmployeeDetail"

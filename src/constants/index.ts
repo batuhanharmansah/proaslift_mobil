@@ -89,6 +89,7 @@ export const API_ENDPOINTS = {
   MAINTENANCE_STORE_REPORT: (id: number) => `/api/mobile/maintenance/${id}/store-report`,
   MAINTENANCE_RESEND_APPROVAL_SMS: (id: number) => `/api/mobile/maintenance/${id}/resend-approval-sms`,
   MAINTENANCE_PRODUCTS: '/api/mobile/maintenance/products',
+  MAINTENANCE_CHECKLIST_ITEMS: '/api/mobile/maintenance/checklist-items',
   MAINTENANCE_REPORTS: '/api/mobile/maintenance-reports',
   MAINTENANCE_REPORT_CREATE: '/api/mobile/maintenance-reports',
   MAINTENANCE_REPORT_DETAIL: (id: number) => `/api/mobile/maintenance-reports/${id}`,
@@ -124,9 +125,26 @@ export const API_ENDPOINTS = {
   MAINTENANCE_REPORT_DOWNLOAD: (id: number) => `/api/mobile/maintenance/${id}/report/download`,
 
   // Reports endpoints
+  REPORTS_HUB: '/api/mobile/reports/hub',
   REPORTS_FINANCIAL: '/api/mobile/reports/financial',
   REPORTS_MAINTENANCE: '/api/mobile/reports/maintenance',
   REPORTS_EMPLOYEE: '/api/mobile/reports/employee',
+
+  // Depot / products CRUD
+  PRODUCTS: '/api/mobile/products',
+  PRODUCT_DETAIL: (id: number) => `/api/mobile/products/${id}`,
+
+  // Web parity modules
+  QUOTATIONS: '/api/mobile/quotations',
+  QUOTATION_DETAIL: (id: number) => `/api/mobile/quotations/${id}`,
+  CHECKS: '/api/mobile/checks',
+  COMPLIANCE: '/api/mobile/compliance',
+  HR_FLEET: '/api/mobile/hr-fleet',
+  CHECKLIST_SETTINGS: '/api/mobile/checklist-settings',
+  GUIDE: '/api/mobile/guide',
+  ROUTE_PLANNER: '/api/mobile/route-planner',
+  BULK_MAINTENANCE_PREVIEW: '/api/mobile/bulk-maintenance/preview',
+  BULK_MAINTENANCE_STORE: '/api/mobile/bulk-maintenance',
   
   // Elevator Labels endpoints
   ELEVATOR_LABELS: '/api/mobile/elevator-labels',
@@ -159,7 +177,7 @@ export const API_ENDPOINTS = {
 // ==================== APP CONSTANTS ====================
 export const APP_CONFIG = {
   NAME: 'Proaslift',
-  VERSION: '2.0.9',
+  VERSION: '2.1.0',
   COMPANY: 'Harmanşah Yazılım',
   SUPPORT_EMAIL: 'destek@harmansah.com',
   SUPPORT_PHONE: '+90 212 555 0123',

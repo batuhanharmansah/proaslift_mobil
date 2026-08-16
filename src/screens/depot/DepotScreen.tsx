@@ -12,7 +12,9 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../types';
 import CustomSidebar from '../../components/navigation/CustomSidebar';
 import { apiClient } from '../../services/api/client';
 import { API_ENDPOINTS, COLORS, DIMENSIONS } from '../../constants';
@@ -33,6 +35,7 @@ interface DepotProduct {
 }
 
 const DepotScreen: React.FC = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [products, setProducts] = useState<DepotProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -40,7 +43,7 @@ const DepotScreen: React.FC = () => {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const response = await apiClient.get(API_ENDPOINTS.MAINTENANCE_PRODUCTS) as {
+      const response = await apiClient.get(API_ENDPOINTS.PRODUCTS) as {
         success?: boolean;
         data?: DepotProduct[];
       };
@@ -72,7 +75,11 @@ const DepotScreen: React.FC = () => {
     const isBelowMin = minLevel > 0 && item.stock_quantity < minLevel;
     const unitLabel = item.unit || 'adet';
     return (
-      <View style={[styles.card, isBelowMin && styles.cardLow]}>
+      <TouchableOpacity
+        style={[styles.card, isBelowMin && styles.cardLow]}
+        onPress={() => navigation.navigate('ProductDetail', { productId: item.id })}
+        activeOpacity={0.7}
+      >
         <View style={styles.cardHeader}>
           <Text style={[styles.productName, isBelowMin && styles.productNameLow]} numberOfLines={1}>{item.name}</Text>
           <View style={[styles.stockBadge, isBelowMin && styles.stockBadgeLow]}>
@@ -92,9 +99,9 @@ const DepotScreen: React.FC = () => {
           )}
           <Text style={styles.category}>{item.category_label || item.category || '—'}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
-  }, []);
+  }, [navigation]);
 
   const renderHeader = () => (
     <View style={styles.header}>
@@ -108,6 +115,13 @@ const DepotScreen: React.FC = () => {
         <Text style={styles.headerTitle}>Depo</Text>
         <Text style={styles.headerSubtitle}>{products.length} ürün</Text>
       </View>
+      <TouchableOpacity
+        style={styles.menuButton}
+        onPress={() => navigation.navigate('ProductCreate')}
+        accessibilityLabel="Yeni ürün"
+      >
+        <Ionicons name="add" size={28} color="white" />
+      </TouchableOpacity>
     </View>
   );
 
@@ -145,7 +159,7 @@ const DepotScreen: React.FC = () => {
           <EmptyState
             icon="cube-outline"
             title="Ürün bulunamadı"
-            subtitle="Depoda henüz ürün kaydı yok. Web panelinden depoya ekleyebilirsiniz."
+            subtitle="Depoda henüz ürün kaydı yok. Sağ üstteki + ile ekleyebilirsiniz."
           />
         }
       />
