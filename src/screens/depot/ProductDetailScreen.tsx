@@ -17,6 +17,7 @@ import { RootStackParamList } from '../../types';
 import { COLORS, DIMENSIONS, API_ENDPOINTS } from '../../constants';
 import { apiClient } from '../../services/api/client';
 import { hapticFeedback, formatCurrency } from '../../utils';
+import { useAuth } from '../../store/authStore';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 type DetailRoute = RouteProp<RootStackParamList, 'ProductDetail'>;
@@ -43,6 +44,7 @@ interface ProductDetail {
 
 const ProductDetailScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  const { isEmployee } = useAuth();
   const { productId } = useRoute<DetailRoute>().params;
   const [product, setProduct] = useState<ProductDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -120,8 +122,8 @@ const ProductDetailScreen: React.FC = () => {
         </View>
 
         <View style={styles.card}>
-          <Row label="Alış fiyatı" value={formatCurrency(product.cost_price)} />
-          <Row label="Satış fiyatı" value={formatCurrency(product.sale_price)} />
+          {!isEmployee && <Row label="Alış fiyatı" value={formatCurrency(product.cost_price)} />}
+          {!isEmployee && <Row label="Satış fiyatı" value={formatCurrency(product.sale_price)} />}
           <Row label="Min. stok" value={`${product.min_stock_level} ${product.unit}`} />
           {product.supplier ? <Row label="Tedarikçi" value={product.supplier} /> : null}
           {product.location ? <Row label="Lokasyon" value={product.location} /> : null}
@@ -129,14 +131,18 @@ const ProductDetailScreen: React.FC = () => {
           {product.notes ? <Row label="Not" value={product.notes} /> : null}
         </View>
 
-        <TouchableOpacity style={styles.editBtn} onPress={() => navigation.navigate('ProductEdit', { productId })}>
-          <Ionicons name="create-outline" size={20} color="white" />
-          <Text style={styles.btnText}>Düzenle</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.deleteBtn} onPress={handleDelete}>
-          <Ionicons name="trash-outline" size={20} color={COLORS.error[600]} />
-          <Text style={styles.deleteText}>Sil</Text>
-        </TouchableOpacity>
+        {!isEmployee && (
+          <>
+            <TouchableOpacity style={styles.editBtn} onPress={() => navigation.navigate('ProductEdit', { productId })}>
+              <Ionicons name="create-outline" size={20} color="white" />
+              <Text style={styles.btnText}>Düzenle</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.deleteBtn} onPress={handleDelete}>
+              <Ionicons name="trash-outline" size={20} color={COLORS.error[600]} />
+              <Text style={styles.deleteText}>Sil</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

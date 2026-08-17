@@ -177,7 +177,7 @@ export const API_ENDPOINTS = {
 // ==================== APP CONSTANTS ====================
 export const APP_CONFIG = {
   NAME: 'Proaslift',
-  VERSION: '2.1.0',
+  VERSION: '2.2.0',
   COMPANY: 'Harmanşah Yazılım',
   SUPPORT_EMAIL: 'destek@harmansah.com',
   SUPPORT_PHONE: '+90 212 555 0123',

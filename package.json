@@ -1,6 +1,6 @@
 {
   "name": "asansor-mobile",
-  "version": "2.0.7",
+  "version": "2.2.0",
   "main": "index.tsx",
   "scripts": {
     "start": "expo start",

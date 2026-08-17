@@ -19,6 +19,7 @@ import CustomSidebar from '../../components/navigation/CustomSidebar';
 import { apiClient } from '../../services/api/client';
 import { API_ENDPOINTS, COLORS, DIMENSIONS } from '../../constants';
 import { hapticFeedback } from '../../utils';
+import { useAuth } from '../../store/authStore';
 import LoadingSpinner from '../../components/ui/LoadingSpinner';
 import EmptyState from '../../components/ui/EmptyState';
 
@@ -36,6 +37,7 @@ interface DepotProduct {
 
 const DepotScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { isEmployee } = useAuth();
   const [products, setProducts] = useState<DepotProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -115,13 +117,15 @@ const DepotScreen: React.FC = () => {
         <Text style={styles.headerTitle}>Depo</Text>
         <Text style={styles.headerSubtitle}>{products.length} ürün</Text>
       </View>
-      <TouchableOpacity
-        style={styles.menuButton}
-        onPress={() => navigation.navigate('ProductCreate')}
-        accessibilityLabel="Yeni ürün"
-      >
-        <Ionicons name="add" size={28} color="white" />
-      </TouchableOpacity>
+      {!isEmployee && (
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => navigation.navigate('ProductCreate')}
+          accessibilityLabel="Yeni ürün"
+        >
+          <Ionicons name="add" size={28} color="white" />
+        </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -159,7 +163,7 @@ const DepotScreen: React.FC = () => {
           <EmptyState
             icon="cube-outline"
             title="Ürün bulunamadı"
-            subtitle="Depoda henüz ürün kaydı yok. Sağ üstteki + ile ekleyebilirsiniz."
+            subtitle={isEmployee ? 'Depoda henüz ürün kaydı yok.' : 'Depoda henüz ürün kaydı yok. Sağ üstteki + ile ekleyebilirsiniz.'}
           />
         }
       />

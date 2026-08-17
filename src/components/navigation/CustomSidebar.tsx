@@ -106,13 +106,13 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ visible, onClose }) => {
         route: 'Maintenance',
         color: COLORS.error[500],
       },
-      ...(isEmployee ? [] : [{
+      {
         id: 'issues',
-        title: 'Arıza Bildirimi',
-        icon: 'warning',
+        title: isEmployee ? 'Arıza Bildirimlerim' : 'Arıza Bildirimi',
+        icon: 'warning' as const,
         route: 'Issues',
         color: COLORS.error[600],
-      }]),
+      },
       {
         id: 'notifications',
         title: 'Bildirimler',
@@ -121,14 +121,14 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ visible, onClose }) => {
         badge: notificationsUnreadCount > 0 ? notificationsUnreadCount : undefined,
         color: COLORS.warning[600],
       },
-      // Depo (ürün stokları) sadece admin için - web’deki depo
-      ...(isEmployee ? [] : [{
+      // Depo (ürün stokları) — employee salt-okunur görür
+      {
         id: 'depot',
         title: 'Depo',
-        icon: 'cube',
+        icon: 'cube' as const,
         route: 'Depot',
         color: COLORS.primary[500],
-      }]),
+      },
       // Finansal yönetim sadece admin için
       ...(isEmployee ? [] : [{
         id: 'financial',
@@ -137,13 +137,13 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ visible, onClose }) => {
         route: 'Financial',
         color: COLORS.success[600],
       }]),
-      ...(isEmployee ? [] : [{
+      {
         id: 'elevatorLabels',
         title: 'Etiket Takibi',
         icon: 'pricetag' as const,
         route: 'ElevatorLabels',
         color: COLORS.success[600],
-      }]),
+      },
       ...(isEmployee ? [] : [{
         id: 'quotations',
         title: 'Teklifler',
@@ -165,13 +165,13 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ visible, onClose }) => {
         route: 'LocationMap',
         color: COLORS.success[500],
       }]),
-      ...(isEmployee ? [] : [{
+      {
         id: 'routePlanner',
         title: 'Rota Planlayıcı',
         icon: 'navigate' as const,
         route: 'RoutePlanner',
         color: COLORS.primary[500],
-      }]),
+      },
       ...(isEmployee ? [] : [{
         id: 'bulkMaintenance',
         title: 'Toplu Bakım',
@@ -193,22 +193,22 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ visible, onClose }) => {
         route: 'HrFleet',
         color: COLORS.warning[500],
       }]),
-      ...(isEmployee ? [] : [{
+      {
         id: 'dtr',
         title: 'DTR',
         icon: 'clipboard' as const,
         route: 'ComplianceList',
         color: COLORS.primary[700],
         params: { documentType: 'dtr', title: 'DTR' },
-      }]),
-      ...(isEmployee ? [] : [{
+      },
+      {
         id: 'kurtarma',
         title: 'Kurtarma Formu',
         icon: 'medical' as const,
         route: 'ComplianceList',
         color: COLORS.error[600],
         params: { documentType: 'kurtarma', title: 'Kurtarma Formu' },
-      }]),
+      },
       ...(isEmployee ? [] : [{
         id: 'checklistSettings',
         title: 'Kontrol Listesi',

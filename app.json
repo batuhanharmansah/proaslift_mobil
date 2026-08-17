@@ -2,7 +2,7 @@
   "expo": {
     "name": "Proaslift",
     "slug": "asansor-mobile",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "orientation": "portrait",
     "scheme": "asansor",
     "icon": "./assets/icon.png",
@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.harmansah.asansor",
-      "buildNumber": "11",
+      "buildNumber": "13",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Çalışanların konumunu takip etmek için konum erişimi gereklidir",
         "NSLocationAlwaysUsageDescription": "Arka planda konum takibi için konum erişimi gereklidir",
@@ -38,7 +38,7 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.harmansah.asansor",
-      "versionCode": 13,
+      "versionCode": 14,
       "permissions": [
         "CAMERA",
         "INTERNET",
