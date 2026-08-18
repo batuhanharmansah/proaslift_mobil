@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.harmansah.asansor",
-      "buildNumber": "13",
+      "buildNumber": "14",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Çalışanların konumunu takip etmek için konum erişimi gereklidir",
         "NSLocationAlwaysUsageDescription": "Arka planda konum takibi için konum erişimi gereklidir",

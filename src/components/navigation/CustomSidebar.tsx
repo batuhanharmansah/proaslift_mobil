@@ -34,6 +34,13 @@ interface MenuItem {
   params?: Record<string, unknown>;
 }
 
+interface MenuSection {
+  id: string;
+  title: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  items: MenuItem[];
+}
+
 interface CustomSidebarProps {
   visible: boolean;
   onClose: () => void;
@@ -45,6 +52,7 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ visible, onClose }) => {
   const route = useRoute();
   const { user, logout, isEmployee } = useAuth();
   const [notificationsUnreadCount, setNotificationsUnreadCount] = React.useState(0);
+  const [expandedSections, setExpandedSections] = React.useState<Set<string>>(new Set(['operasyon']));
 
   const slideAnim = React.useRef(new Animated.Value(-SIDEBAR_WIDTH)).current;
 
@@ -76,171 +84,113 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ visible, onClose }) => {
   }, [visible]);
 
   // ==================== MENU ITEMS ====================
-  const menuItems: MenuItem[] = React.useMemo(() => {
-    const items: MenuItem[] = [
+  // Her zaman görünen üst seviye öğeler
+  const topItems: MenuItem[] = React.useMemo(() => [
+    {
+      id: 'dashboard',
+      title: 'Ana Sayfa',
+      icon: 'home',
+      route: isEmployee ? 'EmployeeDashboard' : 'Main',
+      color: COLORS.primary[500],
+    },
+    {
+      id: 'notifications',
+      title: 'Bildirimler',
+      icon: 'notifications',
+      route: 'Notifications',
+      badge: notificationsUnreadCount > 0 ? notificationsUnreadCount : undefined,
+      color: COLORS.warning[600],
+    },
+  ], [isEmployee, notificationsUnreadCount]);
+
+  // Kategori altında toplanan öğeler — tıklayınca açılıp kapanır
+  const sections: MenuSection[] = React.useMemo(() => {
+    const raw: MenuSection[] = [
       {
-        id: 'dashboard',
-        title: 'Ana Sayfa',
-        icon: 'home',
-        route: isEmployee ? 'EmployeeDashboard' : 'Main',
-        color: COLORS.primary[500],
-      },
-      {
-        id: 'buildings',
-        title: 'Binalar',
-        icon: 'business',
-        route: 'Buildings',
-        color: COLORS.success[500],
-      },
-      {
-        id: 'employees',
-        title: 'Personel',
-        icon: 'people',
-        route: 'Employees',
-        color: COLORS.warning[500],
-      },
-      {
-        id: 'maintenance',
-        title: 'Bakım',
+        id: 'operasyon',
+        title: 'Operasyon',
         icon: 'construct',
-        route: 'Maintenance',
-        color: COLORS.error[500],
+        items: [
+          { id: 'buildings', title: 'Binalar', icon: 'business', route: 'Buildings', color: COLORS.success[500] },
+          { id: 'employees', title: 'Personel', icon: 'people', route: 'Employees', color: COLORS.warning[500] },
+          { id: 'maintenance', title: 'Bakım', icon: 'construct', route: 'Maintenance', color: COLORS.error[500] },
+          { id: 'issues', title: isEmployee ? 'Arıza Bildirimlerim' : 'Arıza Bildirimi', icon: 'warning', route: 'Issues', color: COLORS.error[600] },
+          { id: 'routePlanner', title: 'Rota Planlayıcı', icon: 'navigate', route: 'RoutePlanner', color: COLORS.primary[500] },
+          ...(isEmployee ? [] : [{ id: 'bulkMaintenance', title: 'Toplu Bakım', icon: 'copy' as const, route: 'BulkMaintenance', color: COLORS.error[500] }]),
+        ],
       },
       {
-        id: 'issues',
-        title: isEmployee ? 'Arıza Bildirimlerim' : 'Arıza Bildirimi',
-        icon: 'warning' as const,
-        route: 'Issues',
-        color: COLORS.error[600],
-      },
-      {
-        id: 'notifications',
-        title: 'Bildirimler',
-        icon: 'notifications',
-        route: 'Notifications',
-        badge: notificationsUnreadCount > 0 ? notificationsUnreadCount : undefined,
-        color: COLORS.warning[600],
-      },
-      // Depo (ürün stokları) — employee salt-okunur görür
-      {
-        id: 'depot',
-        title: 'Depo',
-        icon: 'cube' as const,
-        route: 'Depot',
-        color: COLORS.primary[500],
-      },
-      // Finansal yönetim sadece admin için
-      ...(isEmployee ? [] : [{
-        id: 'financial',
-        title: 'Finansal Yönetim',
+        id: 'depoFinans',
+        title: 'Depo & Finans',
         icon: 'wallet',
-        route: 'Financial',
-        color: COLORS.success[600],
-      }]),
-      {
-        id: 'elevatorLabels',
-        title: 'Etiket Takibi',
-        icon: 'pricetag' as const,
-        route: 'ElevatorLabels',
-        color: COLORS.success[600],
-      },
-      ...(isEmployee ? [] : [{
-        id: 'quotations',
-        title: 'Teklifler',
-        icon: 'document-text' as const,
-        route: 'Quotations',
-        color: COLORS.primary[600],
-      }]),
-      ...(isEmployee ? [] : [{
-        id: 'reports',
-        title: 'Raporlar',
-        icon: 'bar-chart' as const,
-        route: 'ReportsHub',
-        color: COLORS.warning[600],
-      }]),
-      ...(isEmployee ? [] : [{
-        id: 'locationMap',
-        title: 'Konum Takibi',
-        icon: 'map' as const,
-        route: 'LocationMap',
-        color: COLORS.success[500],
-      }]),
-      {
-        id: 'routePlanner',
-        title: 'Rota Planlayıcı',
-        icon: 'navigate' as const,
-        route: 'RoutePlanner',
-        color: COLORS.primary[500],
-      },
-      ...(isEmployee ? [] : [{
-        id: 'bulkMaintenance',
-        title: 'Toplu Bakım',
-        icon: 'copy' as const,
-        route: 'BulkMaintenance',
-        color: COLORS.error[500],
-      }]),
-      ...(isEmployee ? [] : [{
-        id: 'checks',
-        title: 'Çek & Senet',
-        icon: 'cash' as const,
-        route: 'Checks',
-        color: COLORS.success[600],
-      }]),
-      ...(isEmployee ? [] : [{
-        id: 'hrFleet',
-        title: 'Hakediş & Araç',
-        icon: 'car' as const,
-        route: 'HrFleet',
-        color: COLORS.warning[500],
-      }]),
-      {
-        id: 'dtr',
-        title: 'DTR',
-        icon: 'clipboard' as const,
-        route: 'ComplianceList',
-        color: COLORS.primary[700],
-        params: { documentType: 'dtr', title: 'DTR' },
+        items: [
+          { id: 'depot', title: 'Depo', icon: 'cube', route: 'Depot', color: COLORS.primary[500] },
+          ...(isEmployee ? [] : [{ id: 'financial', title: 'Finansal Yönetim', icon: 'wallet' as const, route: 'Financial', color: COLORS.success[600] }]),
+          ...(isEmployee ? [] : [{ id: 'quotations', title: 'Teklifler', icon: 'document-text' as const, route: 'Quotations', color: COLORS.primary[600] }]),
+          ...(isEmployee ? [] : [{ id: 'checks', title: 'Çek & Senet', icon: 'cash' as const, route: 'Checks', color: COLORS.success[600] }]),
+          ...(isEmployee ? [] : [{ id: 'hrFleet', title: 'Hakediş & Araç', icon: 'car' as const, route: 'HrFleet', color: COLORS.warning[500] }]),
+        ],
       },
       {
-        id: 'kurtarma',
-        title: 'Kurtarma Formu',
-        icon: 'medical' as const,
-        route: 'ComplianceList',
-        color: COLORS.error[600],
-        params: { documentType: 'kurtarma', title: 'Kurtarma Formu' },
+        id: 'belgeler',
+        title: 'Belgeler & Uygunluk',
+        icon: 'document-text',
+        items: [
+          { id: 'elevatorLabels', title: 'Etiket Takibi', icon: 'pricetag', route: 'ElevatorLabels', color: COLORS.success[600] },
+          { id: 'dtr', title: 'DTR', icon: 'clipboard', route: 'ComplianceList', color: COLORS.primary[700], params: { documentType: 'dtr', title: 'DTR' } },
+          { id: 'kurtarma', title: 'Kurtarma Formu', icon: 'medical', route: 'ComplianceList', color: COLORS.error[600], params: { documentType: 'kurtarma', title: 'Kurtarma Formu' } },
+          ...(isEmployee ? [] : [{ id: 'checklistSettings', title: 'Kontrol Listesi', icon: 'checkbox' as const, route: 'ChecklistSettings', color: COLORS.gray[700] }]),
+        ],
       },
-      ...(isEmployee ? [] : [{
-        id: 'checklistSettings',
-        title: 'Kontrol Listesi',
-        icon: 'checkbox' as const,
-        route: 'ChecklistSettings',
-        color: COLORS.gray[700],
-      }]),
       {
-        id: 'guide',
-        title: 'Kılavuz',
-        icon: 'book' as const,
-        route: 'Guide',
-        color: COLORS.primary[600],
+        id: 'raporKonum',
+        title: 'Raporlar & Konum',
+        icon: 'bar-chart',
+        items: [
+          ...(isEmployee ? [] : [{ id: 'reports', title: 'Raporlar', icon: 'bar-chart' as const, route: 'ReportsHub', color: COLORS.warning[600] }]),
+          ...(isEmployee ? [] : [{ id: 'locationMap', title: 'Konum Takibi', icon: 'map' as const, route: 'LocationMap', color: COLORS.success[500] }]),
+        ],
       },
-      ...(isEmployee ? [] : [{
-        id: 'companyProfile',
-        title: 'Firma Profili',
-        icon: 'business' as const,
-        route: 'CompanyProfile',
-        color: COLORS.gray[700],
-      }]),
       {
-        id: 'profile',
-        title: 'Profil',
-        icon: 'person',
-        route: 'Profile',
-        color: COLORS.primary[600],
+        id: 'diger',
+        title: 'Diğer',
+        icon: 'ellipsis-horizontal',
+        items: [
+          { id: 'guide', title: 'Kılavuz', icon: 'book', route: 'Guide', color: COLORS.primary[600] },
+          ...(isEmployee ? [] : [{ id: 'companyProfile', title: 'Firma Profili', icon: 'business' as const, route: 'CompanyProfile', color: COLORS.gray[700] }]),
+          { id: 'profile', title: 'Profil', icon: 'person', route: 'Profile', color: COLORS.primary[600] },
+        ],
       },
     ];
 
-    return items;
-  }, [isEmployee, notificationsUnreadCount]);
+    return raw.filter((section) => section.items.length > 0);
+  }, [isEmployee]);
+
+  // Aktif rotanın bulunduğu kategoriyi otomatik aç
+  React.useEffect(() => {
+    const activeSection = sections.find((section) => section.items.some((item) => item.route === route.name));
+    if (activeSection) {
+      setExpandedSections((prev) => {
+        if (prev.has(activeSection.id)) return prev;
+        const next = new Set(prev);
+        next.add(activeSection.id);
+        return next;
+      });
+    }
+  }, [route.name, sections]);
+
+  const toggleSection = async (sectionId: string) => {
+    await hapticFeedback.light();
+    setExpandedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(sectionId)) {
+        next.delete(sectionId);
+      } else {
+        next.add(sectionId);
+      }
+      return next;
+    });
+  };
 
   // ==================== HANDLERS ====================
   const handleMenuPress = async (item: MenuItem) => {
@@ -310,19 +260,8 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ visible, onClose }) => {
           {/* Content */}
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
             <View style={styles.menuSection}>
-              <Text style={styles.sectionTitle}>Menü</Text>
-              {menuItems.length > 0 ? (
-                menuItems
-                  .filter(item => {
-                    // Finansal menüyü sadece admin için göster
-                    if (item.id === 'financial' && isEmployee) {
-                      return false;
-                    }
-                    return true;
-                  })
-                  .map((item) => {
+              {topItems.map((item) => {
                 const isActive = route.name === item.route;
-                
                 return (
                   <TouchableOpacity
                     key={item.id}
@@ -331,41 +270,80 @@ const CustomSidebar: React.FC<CustomSidebarProps> = ({ visible, onClose }) => {
                     activeOpacity={0.7}
                   >
                     <View style={styles.menuItemContent}>
-                      <View style={[
-                        styles.menuIcon,
-                        isActive && { backgroundColor: `${item.color}20` }
-                      ]}>
-                        <Ionicons
-                          name={item.icon}
-                          size={22}
-                          color={isActive ? item.color : COLORS.gray[600]}
-                        />
+                      <View style={[styles.menuIcon, isActive && { backgroundColor: `${item.color}20` }]}>
+                        <Ionicons name={item.icon} size={22} color={isActive ? item.color : COLORS.gray[600]} />
                       </View>
-                      
-                      <Text style={[
-                        styles.menuText,
-                        isActive && { color: item.color, fontWeight: '600' }
-                      ]}>
+                      <Text style={[styles.menuText, isActive && { color: item.color, fontWeight: '600' }]}>
                         {item.title}
                       </Text>
-                      
                       {item.badge && item.badge > 0 && (
                         <View style={[styles.badge, { backgroundColor: COLORS.error[500] }]}>
-                          <Text style={styles.badgeText}>
-                            {item.badge > 99 ? '99+' : item.badge.toString()}
-                          </Text>
+                          <Text style={styles.badgeText}>{item.badge > 99 ? '99+' : item.badge.toString()}</Text>
                         </View>
                       )}
                     </View>
-                    
-                    {isActive && (
-                      <View style={[styles.activeIndicator, { backgroundColor: item.color }]} />
-                    )}
+                    {isActive && <View style={[styles.activeIndicator, { backgroundColor: item.color }]} />}
                   </TouchableOpacity>
                 );
-              })              ) : (
-                <Text style={styles.emptyMenuText}>Menü öğesi bulunamadı</Text>
-              )}
+              })}
+
+              {sections.map((section) => {
+                const isExpanded = expandedSections.has(section.id);
+                const hasActiveItem = section.items.some((item) => item.route === route.name);
+
+                return (
+                  <View key={section.id} style={styles.sectionGroup}>
+                    <TouchableOpacity
+                      style={styles.sectionHeader}
+                      onPress={() => toggleSection(section.id)}
+                      activeOpacity={0.7}
+                    >
+                      <View style={styles.sectionHeaderContent}>
+                        <Ionicons name={section.icon} size={18} color={hasActiveItem ? COLORS.primary[600] : COLORS.gray[500]} />
+                        <Text style={[styles.sectionHeaderText, hasActiveItem && { color: COLORS.primary[600] }]}>
+                          {section.title}
+                        </Text>
+                      </View>
+                      <Ionicons
+                        name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                        size={18}
+                        color={COLORS.gray[400]}
+                      />
+                    </TouchableOpacity>
+
+                    {isExpanded && (
+                      <View style={styles.sectionItems}>
+                        {section.items.map((item) => {
+                          const isActive = route.name === item.route;
+                          return (
+                            <TouchableOpacity
+                              key={item.id}
+                              style={[styles.menuItem, isActive && styles.menuItemActive]}
+                              onPress={() => handleMenuPress(item)}
+                              activeOpacity={0.7}
+                            >
+                              <View style={styles.menuItemContent}>
+                                <View style={[styles.menuIcon, isActive && { backgroundColor: `${item.color}20` }]}>
+                                  <Ionicons name={item.icon} size={22} color={isActive ? item.color : COLORS.gray[600]} />
+                                </View>
+                                <Text style={[styles.menuText, isActive && { color: item.color, fontWeight: '600' }]}>
+                                  {item.title}
+                                </Text>
+                                {item.badge && item.badge > 0 && (
+                                  <View style={[styles.badge, { backgroundColor: COLORS.error[500] }]}>
+                                    <Text style={styles.badgeText}>{item.badge > 99 ? '99+' : item.badge.toString()}</Text>
+                                  </View>
+                                )}
+                              </View>
+                              {isActive && <View style={[styles.activeIndicator, { backgroundColor: item.color }]} />}
+                            </TouchableOpacity>
+                          );
+                        })}
+                      </View>
+                    )}
+                  </View>
+                );
+              })}
             </View>
           </ScrollView>
 
@@ -489,6 +467,32 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 16,
+  },
+  sectionGroup: {
+    marginBottom: 4,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: DIMENSIONS.BORDER_RADIUS,
+  },
+  sectionHeaderContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  sectionHeaderText: {
+    fontSize: DIMENSIONS.FONT_SIZE.SM,
+    fontWeight: '700',
+    color: COLORS.gray[600],
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+  },
+  sectionItems: {
+    paddingLeft: 8,
   },
 
   // Menu items
